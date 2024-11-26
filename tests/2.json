@@ -1,0 +1,8 @@
+{
+    "hello": "world",
+    "say": {
+        "number": 23,
+        "string": "wow\"wow",
+        "special": ["true", "false", "null"] 
+    }
+}
