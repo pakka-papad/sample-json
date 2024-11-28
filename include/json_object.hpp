@@ -3,6 +3,7 @@
 
 #include <stdexcept>
 #include <unordered_map>
+#include <memory>
 #include <string>
 #include <vector>
 #include <iostream>
@@ -19,16 +20,18 @@ namespace sample {
 
             class json_object {
                 private:
-                std::unordered_map<std::string, json_value*> _values;
+                std::unordered_map<std::string, std::shared_ptr<json_value>> _values;
 
                 public:
-                void set(const std::string &key, json_value* value);
+                void set(const std::string &key, const std::shared_ptr<json_value> &value);
 
-                json_value* get(const std::string &key);
+                std::shared_ptr<json_value> get(const std::string &key);
 
                 ~json_object() {
-                    for (auto &it: _values) {
-                        if (it.second != nullptr) delete(it.second);
+                    for (auto it: _values) {
+                        if (it.second != nullptr) {
+                            // it.second.reset();
+                        }
                     }
                 }
             };
@@ -43,36 +46,41 @@ namespace sample {
 
             class json_array : public json_value {
                 public:
-                std::vector<json_object*> _arr;
-
-                json_array() {
-                }
+                std::vector<std::shared_ptr<json_object>> _arr;
 
                 virtual ~json_array() {
                     for (auto it: _arr) {
-                        if (it != nullptr) delete(it);
+                        if (it != nullptr) {
+                            // it.reset();
+                        }
                     }
                 }
             };
 
             class json_value_object : public json_value {
                 public:
-                json_object* _obj;
+                std::shared_ptr<json_object> _obj;
 
                 json_value_object() {
-                    _obj = new json_object();
+                    json_object* obj = new json_object();
+                    _obj = std::shared_ptr<json_object>(obj);
                 }
 
                 virtual ~json_value_object() {
-                    if (_obj != nullptr) delete(_obj);
+                    if (_obj != nullptr) {
+                        // _obj.reset();
+                    }
                 }
             };
 
-            void json_object::set(const std::string &key, json_value* value) {
+            void json_object::set(const std::string &key, const std::shared_ptr<json_value> &value) {
                 _values[key] = value;
             }
 
-            json_value* json_object::get(const std::string &key) {
+            std::shared_ptr<json_value> json_object::get(const std::string &key) {
+                if (_values.count(key) == 0) {
+                    return nullptr;
+                }
                 return _values[key];
             }
 
