@@ -14,7 +14,7 @@ namespace sample {
             private:
             std::shared_ptr<internal::json_object> _obj;
 
-            json(std::shared_ptr<internal::json_object> obj);
+            json(std::shared_ptr<internal::json_object>& obj);
 
             public:
             std::string get_string(const std::string &key) const;
@@ -32,7 +32,7 @@ namespace sample {
             ~json();
         };
 
-        json::json(std::shared_ptr<internal::json_object> obj): _obj(obj) {
+        json::json(std::shared_ptr<internal::json_object>& obj): _obj(obj) {
         }
 
         json json::parse_file(const std::string &file_path) {
