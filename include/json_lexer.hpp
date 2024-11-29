@@ -26,6 +26,7 @@ namespace sample {
                 bool find_single_char_token();
                 bool find_string();
                 bool find_number();
+                bool find_special_string();
 
                 void load_next_char();
                 bool is_blank(const char &c) const;
@@ -87,6 +88,9 @@ namespace sample {
                     return;
                 }
                 if (find_number()) {
+                    return;
+                }
+                if (find_special_string()) {
                     return;
                 }
                 _token_type = (_token.size() == 0) ? json_token::END : json_token::ERROR;        
@@ -171,6 +175,35 @@ namespace sample {
                 return true;
             }
             
+            bool json_lexer::find_special_string() {
+                if (_token.size() != 1) return false;
+                if (_token[0] != 't' && _token[0] != 'f' && _token[0] != 'n') return false;
+                for (int i = 0; i < 3; i++) {
+                    if (_pos >= _line.size()) {
+                        _token_type = json_token::ERROR;
+                        return false;
+                    }
+                    _token.push_back(_line[_pos]);
+                    _pos++;
+                }
+                if (_token == "true" || _token == "null") {
+                    _token_type = (_token == "true") ? json_token::TRUE : json_token::JNULL;
+                    return true;
+                }
+                if (_pos >= _line.size()) {
+                    _token_type = json_token::ERROR;
+                    return false;
+                }
+                _token.push_back(_line[_pos]);
+                _pos++;
+                if (_token == "false") {
+                    _token_type = json_token::FALSE;
+                    return true;
+                }
+                _token_type = json_token::ERROR;
+                return false;
+            }
+
             void json_lexer::load_next_char() {
                 _token = "";
                 while (true) {

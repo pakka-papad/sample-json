@@ -48,6 +48,13 @@ namespace sample {
                 }
             };
 
+            class json_null : public json_value {
+                public:
+
+                virtual ~json_null() {
+                }
+            };
+
             class json_array : public json_value {
                 public:
                 std::vector<std::shared_ptr<json_object>> _arr;

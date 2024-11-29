@@ -32,7 +32,8 @@ namespace sample {
             } 
 
             void json_parser_recdes::object(json_lexer &lexer, json_object *res, std::string &key) {
-                if (lexer.get_token_type() != json_token::LEFT_CURLY_BRACKET) {
+                if (lexer.get_token_type() != json_token::LEFT_CURLY_BRACKET ||
+                    lexer.get_token_type() == json_token::ERROR) {
                     invalid_token(lexer);
                     return;
                 }
@@ -52,6 +53,10 @@ namespace sample {
             }
 
             void json_parser_recdes::members(json_lexer &lexer, json_object *res) {
+                if (lexer.get_token_type() == json_token::ERROR) {
+                    invalid_token(lexer);
+                    return;
+                }
                 member(lexer, res);
                 if (lexer.get_token_type() != json_token::COMMA) return;
                 lexer.next();
@@ -59,7 +64,8 @@ namespace sample {
             }
 
             void json_parser_recdes::member(json_lexer &lexer, json_object *res) {
-                if (lexer.get_token_type() != json_token::STRING) {
+                if (lexer.get_token_type() != json_token::STRING || 
+                    lexer.get_token_type() == json_token::ERROR) {
                     invalid_token(lexer);
                     return;
                 }
@@ -74,7 +80,8 @@ namespace sample {
             }
 
             void json_parser_recdes::array(json_lexer &lexer, json_object *res, std::string &key) {
-                if (lexer.get_token_type() != json_token::LEFT_SQUARE_BRACKET) {
+                if (lexer.get_token_type() != json_token::LEFT_SQUARE_BRACKET ||
+                    lexer.get_token_type() == json_token::ERROR) {
                     invalid_token(lexer);
                     return;
                 }
@@ -94,6 +101,10 @@ namespace sample {
             }
 
             void json_parser_recdes::elements(json_lexer &lexer, json_array *arr) {
+                if (lexer.get_token_type() == json_token::ERROR) {
+                    invalid_token(lexer);
+                    return;
+                }
                 std::string key2 = "";
                 arr->_arr.emplace_back(new json_object());
                 element(lexer, arr->_arr.back().get(), key2);
@@ -105,22 +116,32 @@ namespace sample {
             }
 
             void json_parser_recdes::element(json_lexer &lexer, json_object *res, std::string &key) {
+                if (lexer.get_token_type() == json_token::ERROR) {
+                    invalid_token(lexer);
+                    return;
+                }
                 value(lexer, res, key);
             }
 
             void json_parser_recdes::value(json_lexer &lexer, json_object *res, std::string &key) {
+                if (lexer.get_token_type() == json_token::ERROR) {
+                    invalid_token(lexer);
+                    return;
+                }
                 if (lexer.get_token_type() == json_token::LEFT_CURLY_BRACKET) {
                     object(lexer, res, key);
                 } else if (lexer.get_token_type() == json_token::LEFT_SQUARE_BRACKET) {
                     array(lexer, res, key);
-                } else if (lexer.get_token_type() == json_token::NUMBER) {
+                } else if (lexer.get_token_type() == json_token::NUMBER ||
+                    lexer.get_token_type() == json_token::STRING ||
+                    lexer.get_token_type() == json_token::TRUE ||
+                    lexer.get_token_type() == json_token::FALSE) {
                     json_string* s = new json_string();
                     s->_str = lexer.get_token_value();
                     res->set(key, std::shared_ptr<json_value>(s));
                     lexer.next();
-                } else if (lexer.get_token_type() == json_token::STRING) {
-                    json_string* s = new json_string();
-                    s->_str = lexer.get_token_value();
+                } else if (lexer.get_token_type() == json_token::JNULL) {
+                    json_null* s = new json_null();
                     res->set(key, std::shared_ptr<json_value>(s));
                     lexer.next();
                 } 

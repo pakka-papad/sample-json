@@ -6,6 +6,7 @@
 #include <vector>
 #include "json_object.hpp"
 #include "json_parser.hpp"
+#include "invalid_json.hpp"
 
 namespace sample {
     namespace json {
@@ -27,6 +28,10 @@ namespace sample {
 
             float get_float(const std::string &key) const;
 
+            bool get_bool(const std::string &key) const;
+
+            bool is_value_null(const std::string &key) const;
+
             json get_object(const std::string &key) const;
 
             std::vector<json> get_array(const std::string &key) const;
@@ -41,7 +46,12 @@ namespace sample {
 
         json json::parse_file(const std::string &file_path) {
             static internal::json_parser_recdes parser;
-            std::shared_ptr<internal::json_object> obj = parser.parse_object(file_path);
+            std::shared_ptr<internal::json_object> obj;
+            try {
+                obj = parser.parse_object(file_path);
+            } catch(const std::exception& e){
+                throw invalid_json("Invalid json");
+            }
             return json(obj);
         }
 
@@ -56,7 +66,7 @@ namespace sample {
         std::string json::get_string(const std::string &key) const {
             internal::json_value* res = _obj.get()->get(key).get();
             if (res == nullptr) {
-                throw std::runtime_error("Key not found.");
+                throw std::runtime_error("Key \"" + key + "\" not found.");
             }
             internal::json_string* value = (internal::json_string*)res;
             return value->_str;
@@ -65,7 +75,7 @@ namespace sample {
         int json::get_int(const std::string &key) const {
             internal::json_value* res = _obj.get()->get(key).get();
             if (res == nullptr) {
-                throw std::runtime_error("Key not found.");
+                throw std::runtime_error("Key \"" + key + "\" not found.");
             }
             internal::json_string* value = (internal::json_string*)res;
             return std::stoi(value->_str);
@@ -74,16 +84,38 @@ namespace sample {
         float json::get_float(const std::string &key) const {
             internal::json_value* res = _obj.get()->get(key).get();
             if (res == nullptr) {
-                throw std::runtime_error("Key not found.");
+                throw std::runtime_error("Key \"" + key + "\" not found.");
             }
             internal::json_string* value = (internal::json_string*)res;
             return std::stof(value->_str);
         }
 
+        bool json::get_bool(const std::string &key) const {
+            internal::json_value* res = _obj.get()->get(key).get();
+            if (res == nullptr) {
+                throw std::runtime_error("Key \"" + key + "\" not found.");
+            }
+            internal::json_string* value = (internal::json_string*)res;
+            if (value->_str == "true") {
+                return true;
+            } else if (value->_str == "false") {
+                return false;
+            }
+            throw std::runtime_error("Not a bool.");
+        }
+
+        bool json::is_value_null(const std::string &key) const {
+            internal::json_value* res = _obj.get()->get(key).get();
+            if (res == nullptr) {
+                throw std::runtime_error("Key \"" + key + "\" not found.");
+            }
+            return (typeid(*res) == typeid(internal::json_null));
+        }
+
         json json::get_object(const std::string &key) const {
             internal::json_value* res = _obj.get()->get(key).get();
             if (res == nullptr) {
-                throw std::runtime_error("Key not found.");
+                throw std::runtime_error("Key \"" + key + "\" not found.");
             }
             internal::json_value_object* value = (internal::json_value_object*)res;
             return json(value->_obj);
@@ -92,7 +124,7 @@ namespace sample {
         std::vector<json> json::get_array(const std::string &key) const {
             internal::json_value* res = _obj.get()->get(key).get();
             if (res == nullptr) {
-                throw std::runtime_error("Key not found.");
+                throw std::runtime_error("Key \"" + key + "\" not found.");
             }
             internal::json_array* value = (internal::json_array*)res;
             int len = value->_arr.size();

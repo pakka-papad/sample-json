@@ -16,6 +16,9 @@ namespace sample {
                 COLON,
                 NUMBER,
                 STRING,
+                JNULL,
+                TRUE,
+                FALSE,
                 END
             };
         }

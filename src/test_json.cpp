@@ -71,10 +71,48 @@ void test_4() {
     std::cout << "Test 4 passed\n";
 }
 
+void test_5() {
+    try {
+        json obj = json::parse_file("../tests/5.json");
+    } catch(const invalid_json& e) {
+        std::cout << "Test 5 passed\n";
+        return;
+    } catch(const std::exception& e) {
+        std::cout << "Test 5 failed\n";
+    }
+    std::cout << "Test 5 failed\n";
+}
+
+void test_6() {
+    json obj = json::parse_file("../tests/6.json");
+    assert_equal(5, obj.key_count());
+    assert_equal(true, obj.get_bool("key1"));
+    assert_equal(false, obj.get_bool("key2"));
+    assert_equal(true, obj.is_value_null("key3"));
+    assert_equal("value", obj.get_string("key4"));
+    assert_equal(101, obj.get_int("key5"));
+    std::cout << "Test 6 passed\n";
+}
+
+void test_7() {
+    try {
+        json obj = json::parse_file("../tests/7.json");
+    } catch(const invalid_json& e) {
+        std::cout << "Test 7 passed\n";
+        return;
+    } catch(const std::exception& e) {
+        std::cout << "Test 7 failed\n";
+    }
+    std::cout << "Test 7 failed\n";
+}
+
 int main() {
     test_1();
     test_2();
     test_3();
     test_4();
+    test_5();
+    test_6();
+    test_7();
     return EXIT_SUCCESS;
 }
