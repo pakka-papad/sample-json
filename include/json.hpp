@@ -17,6 +17,8 @@ namespace sample {
             json(std::shared_ptr<internal::json_object>& obj);
 
             public:
+            size_t key_count() const;
+
             std::string get_string(const std::string &key) const;
 
             int get_int(const std::string &key) const;
@@ -39,6 +41,10 @@ namespace sample {
             static internal::json_parser_recdes parser;
             std::shared_ptr<internal::json_object> obj = parser.parse_object(file_path);
             return json(obj);
+        }
+
+        size_t json::key_count() const {
+            return _obj.get()->size();
         }
 
         std::string json::get_string(const std::string &key) const {

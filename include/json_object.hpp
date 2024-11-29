@@ -23,6 +23,8 @@ namespace sample {
                 std::unordered_map<std::string, std::shared_ptr<json_value>> _values;
 
                 public:
+                size_t size() const;
+
                 void set(const std::string &key, const std::shared_ptr<json_value> &value);
 
                 std::shared_ptr<json_value> get(const std::string &key);
@@ -84,6 +86,9 @@ namespace sample {
                 return _values[key];
             }
 
+            size_t json_object::size() const {
+                return _values.size();
+            }
         }
     }
 }
