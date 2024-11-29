@@ -1,5 +1,6 @@
 # Sample Json
-A simple json parser for parsing json files.
+A simple json parser for parsing json files.  
+The parser for this is a recursive descent parser. It uses only one token to determine the next step.  
 This is my attempt for the [challenge](https://codingchallenges.fyi/challenges/challenge-json-parser)
 
 ## Usage
