@@ -50,7 +50,7 @@ namespace sample {
             try {
                 obj = parser.parse_object(file_path);
             } catch(const std::exception& e){
-                throw invalid_json("Invalid json");
+                throw invalid_json("Invalid json in file: " + file_path);
             }
             return json(obj);
         }
