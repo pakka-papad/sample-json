@@ -25,6 +25,8 @@ namespace sample {
                 public:
                 size_t size() const;
 
+                std::vector<std::string> keys() const;
+
                 void set(const std::string &key, const std::shared_ptr<json_value> &value);
 
                 std::shared_ptr<json_value> get(const std::string &key);
@@ -88,6 +90,14 @@ namespace sample {
 
             size_t json_object::size() const {
                 return _values.size();
+            }
+
+            std::vector<std::string> json_object::keys() const {
+                std::vector<std::string> res;
+                for (auto &it: _values) {
+                    res.emplace_back(it.first);
+                }
+                return res;
             }
         }
     }

@@ -19,6 +19,8 @@ namespace sample {
             public:
             size_t key_count() const;
 
+            std::vector<std::string> key_set() const;
+
             std::string get_string(const std::string &key) const;
 
             int get_int(const std::string &key) const;
@@ -45,6 +47,10 @@ namespace sample {
 
         size_t json::key_count() const {
             return _obj.get()->size();
+        }
+
+        std::vector<std::string> json::key_set() const {
+            return _obj.get()->keys();
         }
 
         std::string json::get_string(const std::string &key) const {
